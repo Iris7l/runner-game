@@ -222,39 +222,39 @@ const Player = {
         ctx.translate(-6, 18 + bodyY);
         ctx.rotate(cycle.leftLeg);
         ctx.fillStyle = colors.pants;
-        this.roundRect(ctx, -4, 0, 8, 18, 3);
+        Player.roundRect(ctx, -4, 0, 8, 18, 3);
         ctx.fillStyle = colors.shoes;
-        this.roundRect(ctx, -5, 16, 10, 6, 2);
+        Player.roundRect(ctx, -5, 16, 10, 6, 2);
         ctx.restore();
 
         ctx.save();
         ctx.translate(6, 18 + bodyY);
         ctx.rotate(cycle.rightLeg);
         ctx.fillStyle = colors.pants;
-        this.roundRect(ctx, -4, 0, 8, 18, 3);
+        Player.roundRect(ctx, -4, 0, 8, 18, 3);
         ctx.fillStyle = colors.shoes;
-        this.roundRect(ctx, -5, 16, 10, 6, 2);
+        Player.roundRect(ctx, -5, 16, 10, 6, 2);
         ctx.restore();
 
         // Body/torso
         ctx.fillStyle = colors.shirt;
-        this.roundRect(ctx, -12, -8 + bodyY, 24, 28, 5);
+        Player.roundRect(ctx, -12, -8 + bodyY, 24, 28, 5);
         ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        this.roundRect(ctx, -4, -4 + bodyY, 8, 20, 3);
+        Player.roundRect(ctx, -4, -4 + bodyY, 8, 20, 3);
 
         // Arms
         ctx.save();
         ctx.translate(-13, -2 + bodyY);
         ctx.rotate(cycle.leftArm);
         ctx.fillStyle = colors.skin;
-        this.roundRect(ctx, -4, 0, 7, 16, 3);
+        Player.roundRect(ctx, -4, 0, 7, 16, 3);
         ctx.restore();
 
         ctx.save();
         ctx.translate(13, -2 + bodyY);
         ctx.rotate(cycle.rightArm);
         ctx.fillStyle = colors.skin;
-        this.roundRect(ctx, -3, 0, 7, 16, 3);
+        Player.roundRect(ctx, -3, 0, 7, 16, 3);
         ctx.restore();
 
         // Head
@@ -363,8 +363,8 @@ const Player = {
         const isBlinking = blinkTimer === 0;
         const eyeH = isBlinking ? 2 : 6;
         ctx.fillStyle = '#fff';
-        this.roundRect(ctx, -8, headY - 3, 7, eyeH, 2);
-        this.roundRect(ctx, 1, headY - 3, 7, eyeH, 2);
+        Player.roundRect(ctx, -8, headY - 3, 7, eyeH, 2);
+        Player.roundRect(ctx, 1, headY - 3, 7, eyeH, 2);
         if (!isBlinking) {
             ctx.fillStyle = colors.eyes;
             ctx.beginPath();
@@ -413,19 +413,19 @@ const Player = {
 
         if (equip.head) {
             const item = Shop.getEquipmentData(equip.head);
-            if (item) this.drawHeadEquip(ctx, item, headY);
+            if (item) Player.drawHeadEquip(ctx, item, headY);
         }
         if (equip.cape) {
             const item = Shop.getEquipmentData(equip.cape);
-            if (item) this.drawCapeEquip(ctx, item, bodyY, cycle);
+            if (item) Player.drawCapeEquip(ctx, item, bodyY, cycle);
         }
         if (equip.shoes) {
             const item = Shop.getEquipmentData(equip.shoes);
-            if (item) this.drawShoesEquip(ctx, item, bodyY, cycle);
+            if (item) Player.drawShoesEquip(ctx, item, bodyY, cycle);
         }
         if (equip.amulet) {
             const item = Shop.getEquipmentData(equip.amulet);
-            if (item) this.drawAmuletEquip(ctx, item, bodyY);
+            if (item) Player.drawAmuletEquip(ctx, item, bodyY);
         }
     },
 
@@ -521,8 +521,8 @@ const Player = {
                 ctx.fillRect(6, headY - 14, 12, 4);
                 break;
             case 'bunny':
-                this.roundRect(ctx, -6, headY - 30, 5, 18, 2);
-                this.roundRect(ctx, 2, headY - 28, 5, 16, 2);
+                Player.roundRect(ctx, -6, headY - 30, 5, 18, 2);
+                Player.roundRect(ctx, 2, headY - 28, 5, 16, 2);
                 break;
             case 'crown':
                 ctx.fillStyle = '#FFD700';

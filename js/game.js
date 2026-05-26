@@ -54,7 +54,7 @@ const Game = {
             }
             return;
         }
-        if (x > App.W - 60 && y < 50) {
+        if (x > App.W - 80 && y < 60) {
             this.paused = true;
             return;
         }
@@ -79,7 +79,7 @@ const Game = {
             else { this.paused = false; }
             return;
         }
-        if (x > App.W - 60 && y < 50) { this.paused = true; return; }
+        if (x > App.W - 80 && y < 60) { this.paused = true; return; }
 
         const btn = this.getButtonAt(x, y);
         if (btn) {
@@ -316,10 +316,14 @@ const Game = {
         ctx.font = '16px Arial';
         ctx.fillText(`${Math.floor(this.coinsCollected)}`, 16, 56);
 
-        // Pause button
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        ctx.fillRect(App.W - 44, 12, 8, 22);
-        ctx.fillRect(App.W - 30, 12, 8, 22);
+        // Pause button (larger touch target)
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.beginPath();
+        ctx.arc(App.W - 36, 30, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillRect(App.W - 44, 20, 7, 20);
+        ctx.fillRect(App.W - 32, 20, 7, 20);
 
         // Power-up indicators
         let py = 80;
