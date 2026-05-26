@@ -275,6 +275,15 @@ const Game = {
         SaveManager.save(App.saveData);
 
         Game.lastResult = { score: this.score, distance: Math.floor(this.distance), coins: coinTotal, exp: expGained };
+
+        Leaderboard.submitScore(
+            App.saveData.playerName,
+            this.score,
+            Math.floor(this.distance),
+            App.saveData.selectedCharacter,
+            App.saveData.level
+        );
+
         App.switchScene('gameover');
     },
 

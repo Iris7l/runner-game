@@ -165,6 +165,15 @@ const UI = {
         else if (this.inRect(x, y, 215, btnY + 66, 145, 44)) { this.shopTab = 'characters'; App.switchScene('shop'); }
         else if (this.inRect(x, y, 60, btnY + 124, 145, 44)) App.switchScene('skills');
         else if (this.inRect(x, y, 215, btnY + 124, 145, 44)) App.switchScene('missions');
+        else if (this.inRect(x, y, 60, btnY + 182, 300, 38)) {
+            this._leaderboardLoading = true;
+            this._leaderboardScores = [];
+            App.switchScene('leaderboard');
+            Leaderboard.getTopScores(20).then(scores => {
+                this._leaderboardScores = scores;
+                this._leaderboardLoading = false;
+            });
+        }
     },
 
     // === GAME OVER ===
@@ -659,6 +668,84 @@ const UI = {
                 iy += 72;
             }
         }
+    },
+
+    // === LEADERBOARD ===
+    _leaderboardScores: [],
+    _leaderboardLoading: false,
+
+    drawLeaderboard(ctx) {
+        ctx.fillStyle = '#1a1a2e';
+        ctx.fillRect(0, 0, App.W, App.H);
+        ctx.fillStyle = '#FFD700';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('排行榜', App.W / 2, 40);
+
+        this.drawButton(ctx, 16, 10, 60, 30, '返回', '#444');
+
+        if (this._leaderboardLoading) {
+            ctx.fillStyle = '#aaa';
+            ctx.font = '16px Arial';
+            ctx.fillText('加载中...', App.W / 2, App.H / 2);
+            return;
+        }
+
+        const scores = this._leaderboardScores;
+        if (!scores || scores.length === 0) {
+            ctx.fillStyle = '#666';
+            ctx.font = '14px Arial';
+            ctx.fillText('暂无记录，快去创造吧！', App.W / 2, App.H / 2);
+            return;
+        }
+
+        ctx.font = '11px Arial';
+        ctx.fillStyle = '#666';
+        ctx.fillText('排名    玩家        分数       距离', App.W / 2, 70);
+
+        let y = 90;
+        for (let i = 0; i < Math.min(scores.length, 15); i++) {
+            const s = scores[i];
+            const isMe = s.name === App.saveData.playerName;
+            ctx.fillStyle = isMe ? '#2a1a3a' : (i % 2 === 0 ? '#1e1e3e' : '#222244');
+            ctx.fillRect(20, y, App.W - 40, 34);
+
+            if (i < 3) {
+                const medals = ['#FFD700', '#C0C0C0', '#CD7F32'];
+                ctx.fillStyle = medals[i];
+            } else {
+                ctx.fillStyle = isMe ? '#e94560' : '#aaa';
+            }
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${i + 1}`, 32, y + 22);
+
+            ctx.fillStyle = isMe ? '#fff' : '#ccc';
+            ctx.font = '13px Arial';
+            ctx.fillText(s.name || '???', 70, y + 22);
+
+            ctx.fillStyle = '#FFD700';
+            ctx.textAlign = 'right';
+            ctx.fillText(`${s.score}m`, App.W - 100, y + 22);
+
+            ctx.fillStyle = '#aaa';
+            ctx.font = '11px Arial';
+            ctx.fillText(`Lv.${s.level || 1}`, App.W - 36, y + 22);
+
+            y += 36;
+        }
+
+        const rank = Leaderboard.getPlayerRank(App.saveData.bestScore);
+        if (rank > 0) {
+            ctx.fillStyle = '#e94560';
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`你的排名: 第${rank}名 (最高${App.saveData.bestScore}m)`, App.W / 2, App.H - 30);
+        }
+    },
+
+    handleLeaderboardInput(x, y) {
+        if (this.inRect(x, y, 16, 10, 60, 30)) { App.switchScene('menu'); return; }
     },
 
     // === UTILITIES ===

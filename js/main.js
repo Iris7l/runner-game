@@ -151,6 +151,7 @@ const App = {
             case 'shop': UI.handleShopInput(x, y); break;
             case 'skills': UI.handleSkillsInput(x, y); break;
             case 'missions': UI.handleMissionsInput(x, y); break;
+            case 'leaderboard': UI.handleLeaderboardInput(x, y); break;
         }
     },
 
@@ -176,6 +177,7 @@ const App = {
             case 'shop': UI.drawShop(this.ctx); break;
             case 'skills': UI.drawSkills(this.ctx); break;
             case 'missions': UI.drawMissions(this.ctx); break;
+            case 'leaderboard': UI.drawLeaderboard(this.ctx); break;
         }
 
         requestAnimationFrame((t) => this.loop(t));
