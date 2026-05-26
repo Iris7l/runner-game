@@ -38,16 +38,21 @@ const Missions = {
     _sessionPowerups: 0,
 
     checkDailyReset(saveData) {
-        const today = new Date().toISOString().split('T')[0];
-        if (saveData.dailyMissionDate !== today) {
-            saveData.dailyMissionDate = today;
-            saveData.dailyMissions = this.generateDailyMissions();
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            if (saveData.dailyMissionDate !== today) {
+                saveData.dailyMissionDate = today;
+                saveData.dailyMissions = this.generateDailyMissions();
+                saveData.dailyMissionProgress = {};
+                this._sessionDistance = 0;
+                this._sessionCoins = 0;
+                this._sessionGames = 0;
+                this._sessionPowerups = 0;
+                SaveManager.save(saveData);
+            }
+        } catch (e) {
+            saveData.dailyMissions = [];
             saveData.dailyMissionProgress = {};
-            this._sessionDistance = 0;
-            this._sessionCoins = 0;
-            this._sessionGames = 0;
-            this._sessionPowerups = 0;
-            SaveManager.save(saveData);
         }
     },
 

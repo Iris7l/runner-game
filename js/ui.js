@@ -114,6 +114,7 @@ const UI = {
         ctx.scale(1.8, 1.8);
         const charData = Shop.getCharacterData(App.saveData.selectedCharacter);
         const colors = charData ? charData.colors : { skin: '#FFD5B8', hair: '#4A3728', shirt: '#E94560', pants: '#2B4570', shoes: '#1A1A2E', eyes: '#2B2B2B' };
+        const menuHairStyle = (charData && charData.hairStyle) ? charData.hairStyle : 'short';
         const previewFrame = Math.floor(Date.now() / 150) % 6;
         const t = previewFrame / 6 * Math.PI * 2;
         const cycle = {
@@ -122,7 +123,7 @@ const UI = {
             bodyY: Math.abs(Math.sin(t * 2)) * -2
         };
         const previewCtx = { animFrame: previewFrame, stateTime: Date.now(), roundRect: Player.roundRect };
-        Player.drawCharacter.call(previewCtx, ctx, colors, cycle);
+        Player.drawCharacter.call(previewCtx, ctx, colors, cycle, menuHairStyle);
         Player.drawEquipment.call(previewCtx, ctx, colors, cycle);
         ctx.restore();
 
@@ -328,7 +329,7 @@ const UI = {
                 ctx.scale(0.6, 0.6);
                 const miniCycle = { leftArm: 0, rightArm: 0, leftLeg: 0, rightLeg: 0, bodyY: 0 };
                 const miniCtx = { animFrame: 0, stateTime: Date.now(), roundRect: Player.roundRect, state: 'run' };
-                Player.drawCharacter.call(miniCtx, ctx, char.colors, miniCycle);
+                Player.drawCharacter.call(miniCtx, ctx, char.colors, miniCycle, char.hairStyle || 'short');
                 ctx.restore();
 
                 ctx.fillStyle = '#fff';

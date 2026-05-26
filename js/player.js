@@ -214,7 +214,7 @@ const Player = {
         };
     },
 
-    drawCharacter(ctx, colors, cycle) {
+    drawCharacter(ctx, colors, cycle, overrideHairStyle) {
         const bodyY = cycle.bodyY || 0;
 
         // Legs
@@ -266,8 +266,11 @@ const Player = {
 
         // Hair - different styles per character
         ctx.fillStyle = colors.hair;
-        const charData = Shop.getCharacterData(App.saveData.selectedCharacter);
-        const hairStyle = charData ? charData.hairStyle : 'short';
+        let hairStyle = overrideHairStyle || 'short';
+        if (!overrideHairStyle) {
+            const charInfo = Shop.getCharacterData(App.saveData.selectedCharacter);
+            hairStyle = (charInfo && charInfo.hairStyle) ? charInfo.hairStyle : 'short';
+        }
         switch (hairStyle) {
             case 'short':
                 ctx.beginPath();

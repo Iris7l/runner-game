@@ -37,9 +37,28 @@ const SaveManager = {
             const raw = localStorage.getItem(this.SAVE_KEY);
             if (raw) {
                 const data = JSON.parse(raw);
-                return { ...this.defaultData(), ...data };
+                const merged = { ...this.defaultData(), ...data };
+                // Fix stale character references from older versions
+                const validChars = ['xiaoming', 'xiaomei', 'ninja', 'sakura', 'dragon', 'luna'];
+                if (!validChars.includes(merged.selectedCharacter)) {
+                    merged.selectedCharacter = 'xiaoming';
+                }
+                merged.unlockedCharacters = merged.unlockedCharacters.filter(c => validChars.includes(c));
+                if (!merged.unlockedCharacters.includes('xiaoming')) {
+                    merged.unlockedCharacters.push('xiaoming');
+                }
+                // Ensure arrays exist
+                if (!Array.isArray(merged.dailyMissions)) merged.dailyMissions = [];
+                if (!Array.isArray(merged.ownedEquipment)) merged.ownedEquipment = [];
+                if (!Array.isArray(merged.unlockedMaps)) merged.unlockedMaps = ['city'];
+                if (typeof merged.skills !== 'object' || merged.skills === null) merged.skills = {};
+                if (typeof merged.achievements !== 'object' || merged.achievements === null) merged.achievements = {};
+                if (typeof merged.dailyMissionProgress !== 'object' || merged.dailyMissionProgress === null) merged.dailyMissionProgress = {};
+                return merged;
             }
-        } catch (e) {}
+        } catch (e) {
+            localStorage.removeItem(this.SAVE_KEY);
+        }
         return this.defaultData();
     },
 

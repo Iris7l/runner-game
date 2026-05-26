@@ -6,19 +6,24 @@ const Progression = {
     },
 
     addExp(amount) {
-        const skills = App.saveData.skills;
+        if (!amount || amount <= 0 || isNaN(amount)) return;
+        const skills = App.saveData.skills || {};
         const expBonus = 1 + (skills.exp_bonus || 0) * 0.1;
         const equipHead = App.saveData.equipment.head;
-        let equipBonus = 0;
+        let equipMult = 0;
         if (equipHead) {
             const item = Shop.getEquipmentData(equipHead);
-            if (item && item.statType === 'exp') equipBonus = item.statValue;
+            if (item && item.statType === 'exp') equipMult = item.statValue;
         }
-        amount = Math.floor(amount * expBonus * (1 + equipBonus));
+        amount = Math.floor(amount * expBonus * (1 + equipMult));
+        if (isNaN(amount) || amount <= 0) return;
 
         App.saveData.exp += amount;
-        while (App.saveData.level < this.MAX_LEVEL) {
+        let safetyCounter = 0;
+        while (App.saveData.level < this.MAX_LEVEL && safetyCounter < 50) {
+            safetyCounter++;
             const needed = this.getExpForLevel(App.saveData.level);
+            if (needed <= 0 || isNaN(needed)) break;
             if (App.saveData.exp >= needed) {
                 App.saveData.exp -= needed;
                 App.saveData.level++;
