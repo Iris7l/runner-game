@@ -54,11 +54,10 @@ const Game = {
             }
             return;
         }
-        if (x > App.W - 80 && y < 60) {
+        if (x > App.W - 100 && y < 80) {
             this.paused = true;
             return;
         }
-        // If touch is above the button area, treat as jump (backwards compat)
         if (y < 560) {
             Player.jump();
         }
@@ -79,7 +78,7 @@ const Game = {
             else { this.paused = false; }
             return;
         }
-        if (x > App.W - 80 && y < 60) { this.paused = true; return; }
+        if (x > App.W - 100 && y < 80) { this.paused = true; return; }
 
         const btn = this.getButtonAt(x, y);
         if (btn) {
@@ -325,14 +324,14 @@ const Game = {
         ctx.font = '16px Arial';
         ctx.fillText(`${Math.floor(this.coinsCollected)}`, 16, 56);
 
-        // Pause button (larger touch target)
-        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        // Pause button (large touch target)
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
         ctx.beginPath();
-        ctx.arc(App.W - 36, 30, 22, 0, Math.PI * 2);
+        ctx.arc(App.W - 44, 36, 28, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.fillRect(App.W - 44, 20, 7, 20);
-        ctx.fillRect(App.W - 32, 20, 7, 20);
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillRect(App.W - 54, 22, 8, 26);
+        ctx.fillRect(App.W - 40, 22, 8, 26);
 
         // Power-up indicators
         let py = 80;
