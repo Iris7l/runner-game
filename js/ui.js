@@ -34,7 +34,7 @@ const UI = {
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('欢迎来到跑酷冲刺!', App.W / 2, 200);
+        ctx.fillText('欢迎来到小兰冲刺!', App.W / 2, 200);
         ctx.font = '16px Arial';
         ctx.fillStyle = '#aaa';
         ctx.fillText('请输入你的昵称', App.W / 2, 240);
@@ -89,7 +89,7 @@ const UI = {
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 36px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('跑酷冲刺', App.W / 2, 60);
+        ctx.fillText('小兰冲刺', App.W / 2, 60);
 
         ctx.font = '13px Arial';
         ctx.fillStyle = '#aaa';
