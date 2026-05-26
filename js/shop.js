@@ -1,40 +1,46 @@
 const Shop = {
     characters: [
         {
-            id: 'xiaoming', name: '小明', desc: '默认角色',
+            id: 'xiaoming', name: '小明', desc: '默认男孩', gender: 'male',
             unlockType: 'free', unlockValue: 0,
             passiveType: null, passiveValue: 0,
+            hairStyle: 'short',
             colors: { skin: '#FFD5B8', hair: '#4A3728', shirt: '#E94560', pants: '#2B4570', shoes: '#1A1A2E', eyes: '#2B2B2B' }
         },
         {
-            id: 'ninja', name: '忍者', desc: '二段跳高度+15%',
+            id: 'xiaomei', name: '小美', desc: '默认女孩', gender: 'female',
+            unlockType: 'coins', unlockValue: 500,
+            passiveType: 'coins', passiveValue: 0.1,
+            hairStyle: 'long',
+            colors: { skin: '#FFE0CC', hair: '#8B4513', shirt: '#FF69B4', pants: '#4B0082', shoes: '#FF1493', eyes: '#2B2B2B' }
+        },
+        {
+            id: 'ninja', name: '忍者', desc: '二段跳+15%', gender: 'male',
             unlockType: 'coins', unlockValue: 2000,
             passiveType: 'jump', passiveValue: 0.15,
+            hairStyle: 'bandana',
             colors: { skin: '#FFD5B8', hair: '#1a1a1a', shirt: '#2a2a2a', pants: '#1a1a2e', shoes: '#333', eyes: '#2B2B2B' }
         },
         {
-            id: 'robot', name: '机器人', desc: '护盾持续+2秒',
-            unlockType: 'coins', unlockValue: 5000,
+            id: 'sakura', name: '樱', desc: '护盾+2秒', gender: 'female',
+            unlockType: 'coins', unlockValue: 3000,
             passiveType: 'shield', passiveValue: 2,
-            colors: { skin: '#C0C0C0', hair: '#666', shirt: '#4488aa', pants: '#336688', shoes: '#224466', eyes: '#00ffcc' }
+            hairStyle: 'ponytail',
+            colors: { skin: '#FFE8D0', hair: '#FF6B9D', shirt: '#FFB7C5', pants: '#8B4585', shoes: '#C71585', eyes: '#FF69B4' }
         },
         {
-            id: 'elf', name: '精灵', desc: '金币获取+20%',
-            unlockType: 'level', unlockValue: 10,
-            passiveType: 'coins', passiveValue: 0.2,
-            colors: { skin: '#ffe8d0', hair: '#88cc44', shirt: '#44aa44', pants: '#336633', shoes: '#224422', eyes: '#44cc44' }
-        },
-        {
-            id: 'dragon', name: '龙骑士', desc: '冲刺距离+30%',
-            unlockType: 'map', unlockValue: 'factory',
+            id: 'dragon', name: '龙骑士', desc: '冲刺+30%', gender: 'male',
+            unlockType: 'level', unlockValue: 15,
             passiveType: 'dash', passiveValue: 0.3,
+            hairStyle: 'spiky',
             colors: { skin: '#FFD5B8', hair: '#cc3300', shirt: '#aa2200', pants: '#661100', shoes: '#440000', eyes: '#ff6600' }
         },
         {
-            id: 'shadow', name: '影子', desc: '体力消耗-1',
-            unlockType: 'distance', unlockValue: 100000,
+            id: 'luna', name: '露娜', desc: '体力消耗-1', gender: 'female',
+            unlockType: 'distance', unlockValue: 50000,
             passiveType: 'stamina', passiveValue: 2,
-            colors: { skin: '#6a5acd', hair: '#2a1a4a', shirt: '#3a2a5a', pants: '#2a1a4a', shoes: '#1a0a3a', eyes: '#aa88ff' }
+            hairStyle: 'twintail',
+            colors: { skin: '#F5E6D3', hair: '#6A5ACD', shirt: '#7B68EE', pants: '#483D8B', shoes: '#4B0082', eyes: '#9370DB' }
         }
     ],
 

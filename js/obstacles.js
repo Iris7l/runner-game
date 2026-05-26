@@ -17,6 +17,18 @@ const Obstacles = {
         this.scrollX = 0;
     },
 
+    getDifficulty(frameCount) {
+        // Difficulty ramps up over time: 0 → 1.0 over ~3 minutes
+        const t = Math.min(1, frameCount / 10000);
+        return {
+            level: t,
+            spawnInterval: Math.max(500, 1800 - t * 1300),
+            doubleSpawnChance: t * 0.3,
+            fastObstacleChance: t * 0.2,
+            mixedHeightChance: t * 0.4
+        };
+    },
+
     update(speed, dt, frameCount) {
         this.scrollX += speed;
         this.spawnTimer += dt;
@@ -24,11 +36,15 @@ const Obstacles = {
         this.powerupTimer += dt;
 
         const map = Maps.getCurrentMap();
-        const spawnInterval = Math.max(800, 1800 - frameCount * 0.5);
+        const diff = this.getDifficulty(frameCount);
 
-        if (this.spawnTimer > spawnInterval) {
+        if (this.spawnTimer > diff.spawnInterval) {
             this.spawnTimer = 0;
             this.spawnObstacle(map);
+            // Higher difficulty: chance to spawn a second obstacle close behind
+            if (Math.random() < diff.doubleSpawnChance) {
+                setTimeout(() => this.spawnObstacle(map), 200);
+            }
         }
 
         if (this.coinTimer > 400) {

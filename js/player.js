@@ -3,9 +3,15 @@ const Player = {
     y: 0,
     w: 44,
     h: 64,
+    baseH: 64,
+    slideH: 36,
     vy: 0,
+    vx: 0,
     jumpCount: 0,
     state: 'run',
+    sliding: false,
+    moveLeft: false,
+    moveRight: false,
     stateTime: 0,
     animFrame: 0,
     animTimer: 0,
@@ -19,10 +25,15 @@ const Player = {
     invincible: false,
 
     reset() {
+        this.x = 80;
         this.y = Maps.GROUND_Y - this.h;
         this.vy = 0;
+        this.vx = 0;
         this.jumpCount = 0;
         this.state = 'run';
+        this.sliding = false;
+        this.moveLeft = false;
+        this.moveRight = false;
         this.stateTime = 0;
         this.animFrame = 0;
         this.animTimer = 0;
@@ -34,6 +45,7 @@ const Player = {
         this.dashTimer = 0;
         this.hurtTimer = 0;
         this.invincible = false;
+        this.h = this.baseH;
     },
 
     getMaxJumps() {
@@ -63,6 +75,26 @@ const Player = {
         }
     },
 
+    startSlide() {
+        if (this.sliding || this.state === 'jump' || this.state === 'doubleJump') return;
+        this.sliding = true;
+        this.h = this.slideH;
+        this.y = Maps.GROUND_Y - this.h;
+        this.state = 'slide';
+        this.stateTime = 0;
+    },
+
+    stopSlide() {
+        if (!this.sliding) return;
+        this.sliding = false;
+        this.h = this.baseH;
+        this.y = Maps.GROUND_Y - this.h;
+        if (this.state === 'slide') {
+            this.state = 'run';
+            this.stateTime = 0;
+        }
+    },
+
     update(dt) {
         this.stateTime += dt;
         this.animTimer += dt;
@@ -77,6 +109,16 @@ const Player = {
             return;
         }
 
+        // Horizontal movement
+        if (this.moveLeft) this.vx = -4.5;
+        else if (this.moveRight) this.vx = 4.5;
+        else this.vx *= 0.8;
+
+        this.x += this.vx;
+        if (this.x < 16) this.x = 16;
+        if (this.x > App.W - this.w - 16) this.x = App.W - this.w - 16;
+
+        // Vertical physics
         this.vy += 0.6;
         this.y += this.vy;
 
@@ -85,7 +127,7 @@ const Player = {
             this.y = groundY;
             this.vy = 0;
             if (this.state === 'jump' || this.state === 'doubleJump') {
-                this.state = 'run';
+                this.state = this.sliding ? 'slide' : 'run';
                 this.stateTime = 0;
             }
             this.jumpCount = 0;
@@ -152,11 +194,14 @@ const Player = {
     },
 
     getRunCycle() {
+        if (this.state === 'slide') {
+            return { leftArm: -1.2, rightArm: -0.8, leftLeg: 1.2, rightLeg: 0.4, bodyY: 4, bodyTilt: 0.3 };
+        }
         if (this.state === 'jump' || this.state === 'doubleJump') {
-            return { leftArm: -0.8, rightArm: 0.5, leftLeg: -0.3, rightLeg: 0.5, bodyY: -2 };
+            return { leftArm: -0.8, rightArm: 0.5, leftLeg: -0.3, rightLeg: 0.5, bodyY: -2, bodyTilt: 0 };
         }
         if (this.state === 'dash') {
-            return { leftArm: -1.5, rightArm: -1.2, leftLeg: 0.8, rightLeg: -0.2, bodyY: 0 };
+            return { leftArm: -1.5, rightArm: -1.2, leftLeg: 0.8, rightLeg: -0.2, bodyY: 0, bodyTilt: 0 };
         }
         const t = this.animFrame / 6 * Math.PI * 2;
         return {
@@ -164,7 +209,8 @@ const Player = {
             rightArm: Math.sin(t + Math.PI) * 0.7,
             leftLeg: Math.sin(t + Math.PI) * 0.6,
             rightLeg: Math.sin(t) * 0.6,
-            bodyY: Math.abs(Math.sin(t * 2)) * -2
+            bodyY: Math.abs(Math.sin(t * 2)) * -2,
+            bodyTilt: 0
         };
     },
 
@@ -218,17 +264,96 @@ const Player = {
         ctx.ellipse(0, headY, 13, 14, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Hair
+        // Hair - different styles per character
         ctx.fillStyle = colors.hair;
-        ctx.beginPath();
-        ctx.ellipse(0, headY - 6, 14, 10, 0, Math.PI, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(-8, headY - 2, 5, 8, 0.3, Math.PI, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(6, headY - 4, 6, 7, -0.2, Math.PI, Math.PI * 2);
-        ctx.fill();
+        const charData = Shop.getCharacterData(App.saveData.selectedCharacter);
+        const hairStyle = charData ? charData.hairStyle : 'short';
+        switch (hairStyle) {
+            case 'short':
+                ctx.beginPath();
+                ctx.ellipse(0, headY - 6, 14, 10, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(6, headY - 4, 6, 7, -0.2, Math.PI, Math.PI * 2);
+                ctx.fill();
+                break;
+            case 'long':
+                ctx.beginPath();
+                ctx.ellipse(0, headY - 6, 14, 10, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(-13, headY - 4, 6, 22);
+                ctx.fillRect(8, headY - 4, 6, 22);
+                ctx.beginPath();
+                ctx.ellipse(-10, headY + 16, 4, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(11, headY + 16, 4, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+            case 'ponytail':
+                ctx.beginPath();
+                ctx.ellipse(0, headY - 6, 14, 10, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(4, headY - 10);
+                ctx.quadraticCurveTo(16, headY - 14, 14, headY + 8);
+                ctx.quadraticCurveTo(12, headY + 14, 8, headY + 10);
+                ctx.quadraticCurveTo(10, headY - 4, 4, headY - 10);
+                ctx.fill();
+                ctx.fillStyle = colors.shirt;
+                ctx.beginPath();
+                ctx.arc(6, headY - 10, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = colors.hair;
+                break;
+            case 'twintail':
+                ctx.beginPath();
+                ctx.ellipse(0, headY - 6, 14, 10, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(-8, headY - 6);
+                ctx.quadraticCurveTo(-18, headY, -16, headY + 16);
+                ctx.quadraticCurveTo(-14, headY + 20, -10, headY + 14);
+                ctx.quadraticCurveTo(-10, headY + 4, -8, headY - 6);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(8, headY - 6);
+                ctx.quadraticCurveTo(18, headY, 16, headY + 16);
+                ctx.quadraticCurveTo(14, headY + 20, 10, headY + 14);
+                ctx.quadraticCurveTo(10, headY + 4, 8, headY - 6);
+                ctx.fill();
+                break;
+            case 'bandana':
+                ctx.beginPath();
+                ctx.ellipse(0, headY - 8, 14, 6, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#cc0000';
+                ctx.fillRect(-14, headY - 6, 28, 5);
+                ctx.beginPath();
+                ctx.moveTo(10, headY - 4);
+                ctx.lineTo(18, headY);
+                ctx.lineTo(16, headY + 4);
+                ctx.lineTo(10, headY);
+                ctx.fill();
+                ctx.fillStyle = colors.hair;
+                break;
+            case 'spiky':
+                ctx.beginPath();
+                ctx.moveTo(-12, headY - 4);
+                ctx.lineTo(-8, headY - 20);
+                ctx.lineTo(-4, headY - 8);
+                ctx.lineTo(0, headY - 24);
+                ctx.lineTo(4, headY - 8);
+                ctx.lineTo(8, headY - 18);
+                ctx.lineTo(12, headY - 4);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            default:
+                ctx.beginPath();
+                ctx.ellipse(0, headY - 6, 14, 10, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+        }
 
         // Eyes
         const blinkPhase = Math.floor(this.stateTime / 2000) % 20;
@@ -290,6 +415,96 @@ const Player = {
             const item = Shop.getEquipmentData(equip.cape);
             if (item) this.drawCapeEquip(ctx, item, bodyY, cycle);
         }
+        if (equip.shoes) {
+            const item = Shop.getEquipmentData(equip.shoes);
+            if (item) this.drawShoesEquip(ctx, item, bodyY, cycle);
+        }
+        if (equip.amulet) {
+            const item = Shop.getEquipmentData(equip.amulet);
+            if (item) this.drawAmuletEquip(ctx, item, bodyY);
+        }
+    },
+
+    drawShoesEquip(ctx, item, bodyY, cycle) {
+        ctx.fillStyle = item.color || '#44cc44';
+        const leftLegEnd = 18 + Math.abs(cycle.leftLeg) * 4;
+        const rightLegEnd = 18 + Math.abs(cycle.rightLeg) * 4;
+        switch (item.visual) {
+            case 'sneaker':
+                ctx.save();
+                ctx.translate(-6, 18 + bodyY);
+                ctx.rotate(cycle.leftLeg);
+                ctx.fillRect(-6, leftLegEnd - 2, 12, 6);
+                ctx.restore();
+                ctx.save();
+                ctx.translate(6, 18 + bodyY);
+                ctx.rotate(cycle.rightLeg);
+                ctx.fillRect(-6, rightLegEnd - 2, 12, 6);
+                ctx.restore();
+                break;
+            case 'spring':
+                ctx.save();
+                ctx.translate(-6, 18 + bodyY);
+                ctx.rotate(cycle.leftLeg);
+                ctx.strokeStyle = item.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let i = 0; i < 4; i++) {
+                    ctx.moveTo(-3, leftLegEnd + i * 3);
+                    ctx.lineTo(3, leftLegEnd + i * 3 + 1.5);
+                }
+                ctx.stroke();
+                ctx.restore();
+                ctx.save();
+                ctx.translate(6, 18 + bodyY);
+                ctx.rotate(cycle.rightLeg);
+                ctx.strokeStyle = item.color;
+                ctx.beginPath();
+                for (let i = 0; i < 4; i++) {
+                    ctx.moveTo(-3, rightLegEnd + i * 3);
+                    ctx.lineTo(3, rightLegEnd + i * 3 + 1.5);
+                }
+                ctx.stroke();
+                ctx.restore();
+                break;
+            case 'jet':
+                ctx.save();
+                ctx.translate(-6, 18 + bodyY);
+                ctx.rotate(cycle.leftLeg);
+                ctx.fillRect(-5, leftLegEnd - 2, 10, 7);
+                ctx.fillStyle = '#ff8800';
+                ctx.globalAlpha = 0.6 + Math.random() * 0.4;
+                ctx.fillRect(-3, leftLegEnd + 5, 6, 4 + Math.random() * 3);
+                ctx.globalAlpha = 1;
+                ctx.restore();
+                ctx.save();
+                ctx.translate(6, 18 + bodyY);
+                ctx.rotate(cycle.rightLeg);
+                ctx.fillStyle = item.color;
+                ctx.fillRect(-5, rightLegEnd - 2, 10, 7);
+                ctx.fillStyle = '#ff8800';
+                ctx.globalAlpha = 0.6 + Math.random() * 0.4;
+                ctx.fillRect(-3, rightLegEnd + 5, 6, 4 + Math.random() * 3);
+                ctx.globalAlpha = 1;
+                ctx.restore();
+                break;
+        }
+    },
+
+    drawAmuletEquip(ctx, item, bodyY) {
+        ctx.fillStyle = item.color;
+        ctx.beginPath();
+        ctx.arc(0, 2 + bodyY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(0, 2 + bodyY, 5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(0, 1 + bodyY, 2, 0, Math.PI * 2);
+        ctx.fill();
     },
 
     drawHeadEquip(ctx, item, headY) {

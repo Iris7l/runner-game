@@ -60,31 +60,84 @@ const App = {
     },
 
     bindInput() {
-        const handlers = {
-            touchstart: (e) => {
-                e.preventDefault();
-                const rect = this.canvas.getBoundingClientRect();
-                const scaleX = this.W / rect.width;
-                const scaleY = this.H / rect.height;
-                for (const touch of e.changedTouches) {
-                    const x = (touch.clientX - rect.left) * scaleX;
-                    const y = (touch.clientY - rect.top) * scaleY;
-                    this.handleInput(x, y);
-                }
-            },
-            mousedown: (e) => {
-                const rect = this.canvas.getBoundingClientRect();
-                const scaleX = this.W / rect.width;
-                const scaleY = this.H / rect.height;
-                const x = (e.clientX - rect.left) * scaleX;
-                const y = (e.clientY - rect.top) * scaleY;
-                this.handleInput(x, y);
-            }
+        const getPos = (clientX, clientY) => {
+            const rect = this.canvas.getBoundingClientRect();
+            return {
+                x: (clientX - rect.left) * (this.W / rect.width),
+                y: (clientY - rect.top) * (this.H / rect.height)
+            };
         };
-        this.canvas.addEventListener('touchstart', handlers.touchstart, { passive: false });
-        this.canvas.addEventListener('mousedown', handlers.mousedown);
+
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            for (const touch of e.changedTouches) {
+                const pos = getPos(touch.clientX, touch.clientY);
+                if (this.currentScene === 'playing') {
+                    Game.handleTouchStart(touch.identifier, pos.x, pos.y);
+                } else {
+                    this.handleInput(pos.x, pos.y);
+                }
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (this.currentScene !== 'playing') return;
+            for (const touch of e.changedTouches) {
+                const pos = getPos(touch.clientX, touch.clientY);
+                Game.handleTouchMove(touch.identifier, pos.x, pos.y);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (this.currentScene !== 'playing') return;
+            for (const touch of e.changedTouches) {
+                Game.handleTouchEnd(touch.identifier);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchcancel', (e) => {
+            if (this.currentScene !== 'playing') return;
+            for (const touch of e.changedTouches) {
+                Game.handleTouchEnd(touch.identifier);
+            }
+        });
+
+        this.canvas.addEventListener('mousedown', (e) => {
+            const pos = getPos(e.clientX, e.clientY);
+            if (this.currentScene === 'playing') {
+                Game.handleTouchStart('mouse', pos.x, pos.y);
+            } else {
+                this.handleInput(pos.x, pos.y);
+            }
+        });
+
+        this.canvas.addEventListener('mouseup', () => {
+            if (this.currentScene === 'playing') {
+                Game.handleTouchEnd('mouse');
+            }
+        });
+
+        // Keyboard support
+        const keyMap = { ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', KeyA: 'left', KeyD: 'right', KeyS: 'down' };
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') this.handleInput(this.W / 2, this.H / 2, 'space');
+            if (this.currentScene === 'playing') {
+                if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+                    Player.jump();
+                } else if (keyMap[e.code]) {
+                    Game.applyButton(keyMap[e.code], true);
+                    Game.buttons[keyMap[e.code]].pressed = true;
+                }
+            } else {
+                if (e.code === 'Space') this.handleInput(this.W / 2, this.H / 2, 'space');
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            if (this.currentScene === 'playing' && keyMap[e.code]) {
+                Game.applyButton(keyMap[e.code], false);
+                Game.buttons[keyMap[e.code]].pressed = false;
+            }
         });
     },
 

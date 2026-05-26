@@ -10,6 +10,15 @@ const Game = {
     INITIAL_SPEED: 5,
     MAX_SPEED: 13,
 
+    // Virtual buttons
+    buttons: {
+        left:  { x: 36, y: 620, r: 30, pressed: false, label: '←' },
+        down:  { x: 120, y: 635, r: 26, pressed: false, label: '↓' },
+        right: { x: 200, y: 620, r: 30, pressed: false, label: '→' },
+        jump:  { x: 360, y: 610, r: 40, pressed: false, label: '跳' }
+    },
+    activeTouches: {},
+
     start() {
         this.score = 0;
         this.distance = 0;
@@ -49,7 +58,74 @@ const Game = {
             this.paused = true;
             return;
         }
-        Player.jump();
+        // If touch is above the button area, treat as jump (backwards compat)
+        if (y < 560) {
+            Player.jump();
+        }
+    },
+
+    getButtonAt(x, y) {
+        for (const [name, btn] of Object.entries(this.buttons)) {
+            const dx = x - btn.x;
+            const dy = y - btn.y;
+            if (dx * dx + dy * dy < (btn.r + 10) * (btn.r + 10)) return name;
+        }
+        return null;
+    },
+
+    handleTouchStart(id, x, y) {
+        if (this.paused) {
+            if (y > App.H / 2 + 30) { this.paused = false; App.switchScene('menu'); }
+            else { this.paused = false; }
+            return;
+        }
+        if (x > App.W - 60 && y < 50) { this.paused = true; return; }
+
+        const btn = this.getButtonAt(x, y);
+        if (btn) {
+            this.activeTouches[id] = btn;
+            this.buttons[btn].pressed = true;
+            this.applyButton(btn, true);
+        } else if (y < 560) {
+            Player.jump();
+        }
+    },
+
+    handleTouchMove(id, x, y) {
+        const prevBtn = this.activeTouches[id];
+        const newBtn = this.getButtonAt(x, y);
+        if (prevBtn !== newBtn) {
+            if (prevBtn) {
+                this.buttons[prevBtn].pressed = false;
+                this.applyButton(prevBtn, false);
+            }
+            if (newBtn) {
+                this.activeTouches[id] = newBtn;
+                this.buttons[newBtn].pressed = true;
+                this.applyButton(newBtn, true);
+            } else {
+                delete this.activeTouches[id];
+            }
+        }
+    },
+
+    handleTouchEnd(id) {
+        const btn = this.activeTouches[id];
+        if (btn) {
+            this.buttons[btn].pressed = false;
+            this.applyButton(btn, false);
+            delete this.activeTouches[id];
+        }
+    },
+
+    applyButton(name, pressed) {
+        if (name === 'left') Player.moveLeft = pressed;
+        else if (name === 'right') Player.moveRight = pressed;
+        else if (name === 'down') {
+            if (pressed) Player.startSlide();
+            else Player.stopSlide();
+        }
+        else if (name === 'jump' && pressed) Player.jump();
     },
 
     update() {
@@ -57,7 +133,13 @@ const Game = {
         const dt = Math.min(App.deltaTime || 16, 32);
         this.frameCount++;
 
-        this.speed = Math.min(this.MAX_SPEED, this.INITIAL_SPEED + this.getSpeedBonus() + this.frameCount * 0.001);
+        // Difficulty curve: gentle start, accelerates over time
+        const t = this.frameCount;
+        let speedGrowth;
+        if (t < 1800) speedGrowth = t * 0.0005;       // first ~30s: slow ramp
+        else if (t < 5400) speedGrowth = 0.9 + (t - 1800) * 0.001;  // 30s-90s: medium
+        else speedGrowth = 4.5 + (t - 5400) * 0.0015;  // 90s+: aggressive
+        this.speed = Math.min(this.MAX_SPEED, this.INITIAL_SPEED + this.getSpeedBonus() + speedGrowth);
         this.distance += this.speed * 0.5;
         this.score = Math.floor(this.distance);
 
@@ -270,6 +352,21 @@ const Game = {
         ctx.fillRect(App.W - 110, 14, 60, 6);
         ctx.fillStyle = `rgba(233,69,96,0.8)`;
         ctx.fillRect(App.W - 110, 14, 60 * speedRatio, 6);
+
+        // Virtual buttons
+        for (const [name, btn] of Object.entries(this.buttons)) {
+            ctx.beginPath();
+            ctx.arc(btn.x, btn.y, btn.r, 0, Math.PI * 2);
+            ctx.fillStyle = btn.pressed ? 'rgba(233,69,96,0.5)' : 'rgba(255,255,255,0.15)';
+            ctx.fill();
+            ctx.strokeStyle = btn.pressed ? 'rgba(233,69,96,0.8)' : 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = btn.pressed ? '#fff' : 'rgba(255,255,255,0.6)';
+            ctx.font = name === 'jump' ? 'bold 18px Arial' : 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(btn.label, btn.x, btn.y + 7);
+        }
     },
 
     spawnJumpParticles() {
