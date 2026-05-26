@@ -359,13 +359,14 @@ const Player = {
         }
 
         // Eyes
-        const blinkPhase = Math.floor(this.stateTime / 2000) % 20;
-        const eyeH = blinkPhase === 0 ? 1 : 5;
+        const blinkTimer = Math.floor(Date.now() / 100) % 40;
+        const isBlinking = blinkTimer === 0;
+        const eyeH = isBlinking ? 2 : 6;
         ctx.fillStyle = '#fff';
-        this.roundRect(ctx, -8, headY - 3, 7, eyeH + 2, 2);
-        this.roundRect(ctx, 1, headY - 3, 7, eyeH + 2, 2);
-        ctx.fillStyle = colors.eyes;
-        if (eyeH > 1) {
+        this.roundRect(ctx, -8, headY - 3, 7, eyeH, 2);
+        this.roundRect(ctx, 1, headY - 3, 7, eyeH, 2);
+        if (!isBlinking) {
+            ctx.fillStyle = colors.eyes;
             ctx.beginPath();
             ctx.arc(-5, headY, 2.5, 0, Math.PI * 2);
             ctx.fill();
