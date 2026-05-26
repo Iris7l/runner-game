@@ -70,6 +70,7 @@ const App = {
 
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            this._lastTouchTime = Date.now();
             for (const touch of e.changedTouches) {
                 const pos = getPos(touch.clientX, touch.clientY);
                 if (this.currentScene === 'playing') {
@@ -105,6 +106,7 @@ const App = {
         });
 
         this.canvas.addEventListener('mousedown', (e) => {
+            if (this._lastTouchTime && Date.now() - this._lastTouchTime < 500) return;
             const pos = getPos(e.clientX, e.clientY);
             if (this.currentScene === 'playing') {
                 Game.handleTouchStart('mouse', pos.x, pos.y);
@@ -113,7 +115,8 @@ const App = {
             }
         });
 
-        this.canvas.addEventListener('mouseup', () => {
+        this.canvas.addEventListener('mouseup', (e) => {
+            if (this._lastTouchTime && Date.now() - this._lastTouchTime < 500) return;
             if (this.currentScene === 'playing') {
                 Game.handleTouchEnd('mouse');
             }
