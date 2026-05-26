@@ -795,15 +795,3 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-document.addEventListener('touchstart', (e) => {
-    if (App.currentScene === 'playing' && Game.paused) {
-        const rect = App.canvas.getBoundingClientRect();
-        const scaleY = App.H / rect.height;
-        const y = (e.changedTouches[0].clientY - rect.top) * scaleY;
-        if (y > App.H / 2 + 30) {
-            App.switchScene('menu');
-        } else {
-            Game.paused = false;
-        }
-    }
-}, { passive: true });
