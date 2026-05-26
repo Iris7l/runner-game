@@ -1,7 +1,7 @@
 {
   "scores": [
     {
-      "name": "Ã¥Â°ÂÃ©Â£ÂÃ¤Â¾Â ",
+      "name": "ÃÂ¥ÃÂ°ÃÂÃÂ©ÃÂ£ÃÂÃÂ¤ÃÂ¾ÃÂ ",
       "score": 7365,
       "distance": 7365,
       "character": "xiaoming",
@@ -9,7 +9,7 @@
       "time": 1779785967108
     },
     {
-      "name": "å°é£ä¾ ",
+      "name": "Ã¥Â°ÂÃ©Â£ÂÃ¤Â¾Â ",
       "score": 5618,
       "distance": 5618,
       "character": "xiaoming",
@@ -17,7 +17,15 @@
       "time": 1779786128847
     },
     {
-      "name": "跑者",
+      "name": "小飞侠",
+      "score": 4529,
+      "distance": 4529,
+      "character": "xiaoming",
+      "level": 21,
+      "time": 1779787432413
+    },
+    {
+      "name": "è·è",
       "score": 3719,
       "distance": 3719,
       "character": "ninja",
