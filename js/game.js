@@ -41,6 +41,8 @@ const Game = {
             const item = Shop.getEquipmentData(shoes);
             if (item && item.statType === 'speed') bonus += item.statValue;
         }
+        const char = Shop.getCharacterData(App.saveData.selectedCharacter);
+        if (char && char.passiveType === 'allboost') bonus += char.passiveValue;
         return bonus;
     },
 
@@ -200,6 +202,7 @@ const Game = {
         if (skills.coin_mult) mult += skills.coin_mult * 0.15;
         const char = Shop.getCharacterData(App.saveData.selectedCharacter);
         if (char && char.passiveType === 'coins') mult += char.passiveValue;
+        if (char && char.passiveType === 'allboost') mult += char.passiveValue;
         return mult;
     },
 

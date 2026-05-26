@@ -41,6 +41,13 @@ const Shop = {
             passiveType: 'stamina', passiveValue: 2,
             hairStyle: 'twintail',
             colors: { skin: '#F5E6D3', hair: '#6A5ACD', shirt: '#7B68EE', pants: '#483D8B', shoes: '#4B0082', eyes: '#9370DB' }
+        },
+        {
+            id: 'xiaolan', name: '小兰', desc: '全属性+10% 最强女神', gender: 'female',
+            unlockType: 'coins', unlockValue: 88888,
+            passiveType: 'allboost', passiveValue: 0.1,
+            hairStyle: 'long',
+            colors: { skin: '#FFF0E8', hair: '#1a0a2e', shirt: '#ff3366', pants: '#220033', shoes: '#cc0044', eyes: '#ff1493' }
         }
     ],
 

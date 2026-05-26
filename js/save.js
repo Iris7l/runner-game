@@ -39,7 +39,7 @@ const SaveManager = {
                 const data = JSON.parse(raw);
                 const merged = { ...this.defaultData(), ...data };
                 // Fix stale character references from older versions
-                const validChars = ['xiaoming', 'xiaomei', 'ninja', 'sakura', 'dragon', 'luna'];
+                const validChars = ['xiaoming', 'xiaomei', 'ninja', 'sakura', 'dragon', 'luna', 'xiaolan'];
                 if (!validChars.includes(merged.selectedCharacter)) {
                     merged.selectedCharacter = 'xiaoming';
                 }

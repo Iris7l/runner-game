@@ -146,11 +146,11 @@ const UI = {
         ctx.font = '12px Arial';
         ctx.fillStyle = '#666';
         ctx.textAlign = 'center';
-        ctx.fillText(`最高分: ${App.saveData.bestScore}m | 总里程: ${App.saveData.totalDistance}m`, App.W / 2, App.H - 36);
+        ctx.fillText(`最高分: ${App.saveData.bestScore}m | 总里程: ${App.saveData.totalDistance}m`, App.W / 2, App.H - 50);
 
-        ctx.font = 'italic 13px Arial';
-        ctx.fillStyle = '#e94560';
-        ctx.fillText('For 小兰宝宝～', App.W / 2, App.H - 14);
+        ctx.font = 'italic 14px Arial';
+        ctx.fillStyle = '#ff6699';
+        ctx.fillText('For 小兰宝宝～', App.W / 2, App.H - 26);
     },
 
     handleMenuInput(x, y) {
