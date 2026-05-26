@@ -146,7 +146,11 @@ const UI = {
         ctx.font = '12px Arial';
         ctx.fillStyle = '#666';
         ctx.textAlign = 'center';
-        ctx.fillText(`最高分: ${App.saveData.bestScore}m | 总里程: ${App.saveData.totalDistance}m`, App.W / 2, App.H - 20);
+        ctx.fillText(`最高分: ${App.saveData.bestScore}m | 总里程: ${App.saveData.totalDistance}m`, App.W / 2, App.H - 36);
+
+        ctx.font = 'italic 13px Arial';
+        ctx.fillStyle = '#e94560';
+        ctx.fillText('For 小兰宝宝～', App.W / 2, App.H - 14);
     },
 
     handleMenuInput(x, y) {
